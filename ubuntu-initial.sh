@@ -69,7 +69,7 @@ cp 50unattended-upgrades 10periodic /etc/apt/apt.conf.d/
 cat >> /etc/apt/apt.conf.d/50unattended << EOF
 Unattended-Upgrade::Mail "$EMAIL";
 EOF
-[[ $AUTO_REBOOT = y* ]] && echo 'Unattended-Upgrade::Automatic-Reboot "true";' >> /etc/apt/apt.conf.d/50unattended
+[[ $AUTO_REBOOT = y* ]] && echo 'Unattended-Upgrade::Automatic-Reboot "true";' >> /etc/apt/apt.conf.d/50unattended-upgrades
 
 chown root:root /etc/{logrotate,apt-fast}.conf /etc/systemd/journald.conf /etc/apt/apt.conf.d/{50unattended-upgrades,10periodic}
 
@@ -86,7 +86,7 @@ chmod 700 $myhome/.ssh
 cat << 'EOF' >> $myhome/.ssh/config
 Host *
   ServerAliveInterval 60
-  StrictHostKeyChecking no
+  StrictHostKeyChecking accept-new
 
 Host github.com
   User git

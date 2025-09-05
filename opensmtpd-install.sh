@@ -12,15 +12,17 @@ DOMAIN=$(hostname -d)
 echo "@: $ROOTMAIL" > /etc/aliases
 
 mkdir -p /etc/smtpd/
-[[ -z $SMTPPASS ]] && read -e -p "Enter password for accessing your SMTP server: " SMTPPASS
-PASS=$(smtpctl encrypt "$SMTPPASS")
+[[ -z $SMTPPASS ]] && read -rsp "SMTP password for user 'mail': " SMTPPASS; echo
+PASS=$(smtpctl encrypt "$SMTPPASS"); unset SMTPPASS
+printf 'mail %s\n' "$PASS" > /etc/smtpd/creds
+
 openssl req  -nodes -new -x509 -subj "/C=US/ST=CA/L=SF/O=$DOMAIN/OU=IT/CN=$DOMAIN" -keyout /etc/smtpd/smtpd.key -out /etc/smtpd/smtpd.crt
 chown root:opensmtpd /etc/smtpd/*
 chmod 640 /etc/smtpd/*
 cp smtpd.conf /etc/
 chmod 640 /etc/smtpd.conf
 chown root:root /etc/smtpd.conf
-perl -pi -e "s/SMTPPASS/$SMTPPASS/" /etc/smtpd.conf
+#perl -pi -e "s/SMTPPASS/$SMTPPASS/" /etc/smtpd.conf
 
 echo "domain  $DOMAIN" >> /etc/dkimproxy/dkimproxy_out.conf
 echo DKIMPROXYGROUP=ssl-cert >> /etc/default/dkimproxy
